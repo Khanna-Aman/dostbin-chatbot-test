@@ -1,0 +1,86 @@
+================================================================================
+                    UPLOAD TO GITHUB - STEP BY STEP
+================================================================================
+
+STEP 1: Create GitHub Repository
+---------------------------------
+1. Go to https://github.com
+2. Click "+" icon (top right) → "New repository"
+3. Repository name: dostbin-chatbot
+4. Description: AI Customer Support Chatbot for Dostbin Solutions
+5. Select PUBLIC (required for free Streamlit)
+6. DO NOT check "Add README" or ".gitignore"
+7. Click "Create repository"
+8. COPY the repository URL (looks like: https://github.com/YOUR_USERNAME/dostbin-chatbot.git)
+
+
+STEP 2: Open Command Prompt (NOT PowerShell)
+---------------------------------------------
+1. Press Windows + R
+2. Type: cmd
+3. Press Enter
+4. Navigate to streamlit-deploy folder:
+   
+   cd d:\Aman\Internship\_DOSTBin_one_shot\streamlit-deploy
+
+
+STEP 3: Run These Commands ONE BY ONE
+--------------------------------------
+
+git config user.name "Aman Khanna"
+
+git config user.email "your.email@example.com"
+
+git add .
+
+git commit -m "Initial commit: Dostbin AI Chatbot"
+
+git remote add origin https://github.com/YOUR_USERNAME/dostbin-chatbot.git
+
+git branch -M main
+
+git push -u origin main
+
+
+STEP 4: Enter Credentials When Prompted
+----------------------------------------
+Username: YOUR_GITHUB_USERNAME
+Password: YOUR_PERSONAL_ACCESS_TOKEN (NOT your GitHub password!)
+
+
+HOW TO GET PERSONAL ACCESS TOKEN:
+----------------------------------
+1. Go to: https://github.com/settings/tokens
+2. Click "Generate new token" → "Generate new token (classic)"
+3. Name: dostbin-chatbot
+4. Expiration: 90 days
+5. Check: repo (full control)
+6. Click "Generate token"
+7. COPY THE TOKEN IMMEDIATELY (starts with ghp_...)
+8. Use this as password when pushing
+
+
+STEP 5: Verify Upload
+----------------------
+1. Go to your GitHub repository
+2. You should see all files uploaded
+3. Done! Ready for Streamlit deployment
+
+
+================================================================================
+                        FILES THAT WILL BE UPLOADED
+================================================================================
+
+✓ app.py - Main chatbot code
+✓ knowledge_base.json - All product/pricing data (320KB)
+✓ requirements.txt - Dependencies
+✓ README.md - Project description
+✓ .gitignore - Files to ignore
+✓ KNOWLEDGE_BASE_UPDATE_GUIDE.md - How to update info
+✓ UPDATE_DEPLOYED_CHATBOT_GUIDE.md - How to update after deployment
+✓ Project_Submission_Letter.md - Internship completion certificate
+
+Total: 8 files
+
+================================================================================
+
