@@ -136,6 +136,15 @@ if 'total_tokens' not in st.session_state:
 st.title("🌱 Dostbin AI Assistant")
 st.caption("Powered by Groq Llama 3.1 8B - Ultra-fast AI Support")
 
+# DEBUG: Show system prompt info (remove after testing)
+with st.expander("🔍 DEBUG: System Prompt Info (for testing)"):
+    st.write(f"System prompt length: {len(SYSTEM_PROMPT)} characters")
+    st.write(f"Contains contact info: {'Email: info@dostbin.com' in SYSTEM_PROMPT}")
+    st.write(f"Contains phone: {'+918105868094' in SYSTEM_PROMPT}")
+    st.write(f"Contains 'HOW IT WORKS': {'HOW IT WORKS' in SYSTEM_PROMPT}")
+    st.write(f"Contains 'KEY FEATURES': {'KEY FEATURES' in SYSTEM_PROMPT}")
+    st.text_area("First 1000 chars of system prompt:", SYSTEM_PROMPT[:1000], height=200)
+
 # Display chat messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
