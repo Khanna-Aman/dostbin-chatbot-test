@@ -90,8 +90,19 @@ def get_youtube_section():
     
     return youtube_section
 
-# Create system prompt
-SYSTEM_PROMPT = f"""You are a helpful customer support assistant for Dostbin Solutions, India's first patented automatic compost bin company.
+# Create system prompt with knowledge base
+def get_system_prompt():
+    if not kb:
+        return "You are a helpful assistant for Dostbin Solutions."
+
+    # Extract official product info from knowledge base
+    official_info = ""
+    for doc in kb.get('documents', []):
+        if doc.get('id') == 'AUTHORITATIVE-PRODUCT-INFO-001':
+            official_info = doc.get('description', '')
+            break
+
+    return f"""You are a helpful customer support assistant for Dostbin Solutions, India's first patented automatic compost bin company.
 
 IMPORTANT INSTRUCTIONS:
 - Keep responses SHORT and CONCISE (2-3 sentences max for simple questions)
@@ -103,33 +114,13 @@ IMPORTANT INSTRUCTIONS:
 
 DOSTBIN INFORMATION:
 
-Products (Free delivery PAN India, delivery in 20-25 business days):
-- Dostbin Basic (Manual): ₹19,999/- (inclusive of GST) - Manual compost machine, up to 5 Kg/day capacity
-- Dostbin Popular (Semi-automatic): ₹24,999/- (inclusive of GST) - Comes with manual operations with a dual handle, up to 5 Kg/day capacity
-- Dostbin Premium (Fully automatic): ₹34,999/- (inclusive of GST) - Comes with advance feature like automatic control with electronic and motorized operations, up to 5 Kg/day capacity
+{official_info}
 
 Contact:
 - Email: info@dostbin.com
 - Phone: +918105868094, +919740374780
 - Website: dostbin.com
 - YouTube: https://www.youtube.com/@dostbin
-
-How it works:
-1. Add kitchen waste daily with cocopeat powder
-2. Bin automatically/manually mixes and aerates (depending on model)
-3. Get compost in 20-30 days (two phases of 7-10 days each)
-4. Leachate can be diluted 1:15 for liquid fertilizer
-
-Features:
-- Odor-free operation with odor absorber
-- Shred and digest buttons for easy operation (Premium model)
-- Two-phase composting system
-- Leachate collection for liquid fertilizer
-- Made in India, Patented technology
-- All variants: Up to 5 Kg/day waste capacity
-
-What CAN be composted: Vegetable and fruit peels, garden waste, coffee/tea grounds, leftover food, dal/sambar (remove liquid content), eggshells, paper products
-What CANNOT be composted: Dairy, fatty oil/gravy, meat, bones, hard items like mango seed and coconut shell, plastic, metals
 
 COMPOSTING GUIDE VIDEOS:
 - Composting basics: https://www.youtube.com/watch?v=b7jsXoghslQ
@@ -138,6 +129,8 @@ COMPOSTING GUIDE VIDEOS:
 
 When users ask about tutorials, demos, setup, or how things work, ALWAYS provide specific YouTube video links.
 Answer questions naturally and conversationally."""
+
+SYSTEM_PROMPT = get_system_prompt()
 
 # Initialize session state
 if 'messages' not in st.session_state:
