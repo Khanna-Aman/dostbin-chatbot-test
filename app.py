@@ -97,7 +97,8 @@ def get_system_prompt():
 
     # Extract official product info from knowledge base
     official_info = ""
-    for doc in kb.get('documents', []):
+    products = kb.get('collections', {}).get('products', [])
+    for doc in products:
         if doc.get('id') == 'AUTHORITATIVE-PRODUCT-INFO-001':
             official_info = doc.get('description', '')
             break
@@ -123,6 +124,20 @@ Contact:
 - Phone: +918105868094, +919740374780
 - Website: dostbin.com
 - YouTube: https://www.youtube.com/@dostbin
+
+How it works:
+1. Add kitchen waste daily with cocopeat powder
+2. Bin automatically/manually mixes and aerates (depending on model)
+3. Get compost in 20-30 days (two phases of 7-10 days each)
+4. Leachate can be diluted 1:15 for liquid fertilizer
+
+Features:
+- Odor-free operation with odor absorber
+- Shred and digest buttons for easy operation (Premium model)
+- Two-phase composting system
+- Leachate collection for liquid fertilizer
+- Made in India, Patented technology
+- All variants: Up to 5 Kg/day waste capacity
 
 COMPOSTING GUIDE VIDEOS:
 - Composting basics: https://www.youtube.com/watch?v=b7jsXoghslQ
