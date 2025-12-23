@@ -96,16 +96,43 @@ def get_system_prompt():
         return "You are a helpful assistant for Dostbin Solutions."
 
     # Extract official product info from knowledge base
-    official_info = ""
     products = kb.get('collections', {}).get('products', [])
+    official_desc = ""
     for doc in products:
         if doc.get('id') == 'AUTHORITATIVE-PRODUCT-INFO-001':
-            official_info = doc.get('description', '')
+            official_desc = doc.get('description', '')
             break
 
-    return f"""You are a helpful customer support assistant for Dostbin Solutions.
+    # Parse the description to extract structured info (same format as old app.py)
+    import re
 
-CRITICAL INSTRUCTIONS:
+    # Extract contact info
+    email_match = re.search(r'Email:\s*(\S+@\S+)', official_desc)
+    phone_match = re.search(r'Phone:\s*([\+\d,\s]+)', official_desc)
+    website_match = re.search(r'Website:\s*(\S+)', official_desc)
+    youtube_match = re.search(r'YouTube:\s*(https://[^\s\n]+)', official_desc)
+
+    email = email_match.group(1) if email_match else "info@dostbin.com"
+    phone = phone_match.group(1).strip() if phone_match else "+918105868094, +919740374780"
+    website = website_match.group(1) if website_match else "dostbin.com"
+    youtube = youtube_match.group(1) if youtube_match else "https://www.youtube.com/@dostbin"
+
+    # Extract pricing info
+    basic_match = re.search(r'DOSTBIN BASIC.*?₹([\d,]+)', official_desc, re.DOTALL)
+    popular_match = re.search(r'DOSTBIN POPULAR.*?₹([\d,]+)', official_desc, re.DOTALL)
+    premium_match = re.search(r'DOSTBIN PREMIUM.*?₹([\d,]+)', official_desc, re.DOTALL)
+
+    basic_price = basic_match.group(1) if basic_match else "19,999"
+    popular_price = popular_match.group(1) if popular_match else "24,999"
+    premium_price = premium_match.group(1) if premium_match else "34,999"
+
+    # Extract delivery time
+    delivery_match = re.search(r'Delivery Time:\s*([^\n]+)', official_desc)
+    delivery = delivery_match.group(1) if delivery_match else "20-25 business days across PAN India"
+
+    return f"""You are a helpful customer support assistant for Dostbin Solutions, India's first patented automatic compost bin company.
+
+IMPORTANT INSTRUCTIONS:
 - Keep responses SHORT and CONCISE (2-3 sentences max for simple questions)
 - Be friendly and professional
 - Only answer questions about Dostbin products and services
@@ -113,15 +140,38 @@ CRITICAL INSTRUCTIONS:
 - When relevant, suggest YouTube videos to help users learn more (don't force links on every response)
 - Include YouTube links when users ask about: products, variants, composting process, setup, demos, or how things work
 
-⚠️ IMPORTANT: For ALL information (pricing, delivery, contact, how it works, features), ONLY use the official information below. This is the single source of truth.
+DOSTBIN INFORMATION:
 
-OFFICIAL DOSTBIN INFORMATION (COMPLETE - USE THIS ONLY):
+Products (Free delivery PAN India, delivery in {delivery}):
+- Dostbin Basic (Manual): ₹{basic_price}/- (inclusive of GST) - Manual compost machine, up to 5 Kg/day capacity
+- Dostbin Popular (Semi-automatic): ₹{popular_price}/- (inclusive of GST) - Comes with manual operations with a dual handle, up to 5 Kg/day capacity
+- Dostbin Premium (Fully automatic): ₹{premium_price}/- (inclusive of GST) - Comes with advance feature like automatic control with electronic and motorized operations, up to 5 Kg/day capacity
 
-{official_info}
+Contact:
+- Email: {email}
+- Phone: {phone}
+- Website: {website}
+- YouTube: {youtube}
+
+How it works:
+1. Add kitchen waste daily with cocopeat powder
+2. Bin automatically/manually mixes and aerates (depending on model)
+3. Get compost in 20-30 days (two phases of 7-10 days each)
+4. Leachate can be diluted 1:15 for liquid fertilizer
+
+Features:
+- Odor-free operation with odor absorber
+- Shred and digest buttons for easy operation (Premium model)
+- Two-phase composting system
+- Leachate collection for liquid fertilizer
+- Made in India, Patented technology
+- All variants: Up to 5 Kg/day waste capacity
+
+What CAN be composted: Vegetable and fruit peels, garden waste, coffee/tea grounds, leftover food, dal/sambar (remove liquid content), eggshells, paper products
+What CANNOT be composted: Dairy, fatty oil/gravy, meat, bones, hard items like mango seed and coconut shell, plastic, metals
 
 {get_youtube_section()}
 
-When users ask about tutorials, demos, setup, or how things work, ALWAYS provide specific YouTube video links from the official information above.
 Answer questions naturally and conversationally."""
 
 SYSTEM_PROMPT = get_system_prompt()
@@ -135,15 +185,6 @@ if 'total_tokens' not in st.session_state:
 # Header
 st.title("🌱 Dostbin AI Assistant")
 st.caption("Powered by Groq Llama 3.1 8B - Ultra-fast AI Support")
-
-# DEBUG: Show system prompt info (remove after testing)
-with st.expander("🔍 DEBUG: System Prompt Info (for testing)"):
-    st.write(f"System prompt length: {len(SYSTEM_PROMPT)} characters")
-    st.write(f"Contains contact info: {'Email: info@dostbin.com' in SYSTEM_PROMPT}")
-    st.write(f"Contains phone: {'+918105868094' in SYSTEM_PROMPT}")
-    st.write(f"Contains 'HOW IT WORKS': {'HOW IT WORKS' in SYSTEM_PROMPT}")
-    st.write(f"Contains 'KEY FEATURES': {'KEY FEATURES' in SYSTEM_PROMPT}")
-    st.text_area("First 1000 chars of system prompt:", SYSTEM_PROMPT[:1000], height=200)
 
 # Display chat messages
 for message in st.session_state.messages:
