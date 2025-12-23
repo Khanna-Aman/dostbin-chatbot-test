@@ -96,43 +96,16 @@ def get_system_prompt():
         return "You are a helpful assistant for Dostbin Solutions."
 
     # Extract official product info from knowledge base
+    official_info = ""
     products = kb.get('collections', {}).get('products', [])
-    official_desc = ""
     for doc in products:
         if doc.get('id') == 'AUTHORITATIVE-PRODUCT-INFO-001':
-            official_desc = doc.get('description', '')
+            official_info = doc.get('description', '')
             break
-
-    # Parse the description to extract structured info (same format as old app.py)
-    import re
-
-    # Extract contact info
-    email_match = re.search(r'Email:\s*(\S+@\S+)', official_desc)
-    phone_match = re.search(r'Phone:\s*([\+\d,\s]+)', official_desc)
-    website_match = re.search(r'Website:\s*(\S+)', official_desc)
-    youtube_match = re.search(r'YouTube:\s*(https://[^\s\n]+)', official_desc)
-
-    email = email_match.group(1) if email_match else "info@dostbin.com"
-    phone = phone_match.group(1).strip() if phone_match else "+918105868094, +919740374780"
-    website = website_match.group(1) if website_match else "dostbin.com"
-    youtube = youtube_match.group(1) if youtube_match else "https://www.youtube.com/@dostbin"
-
-    # Extract pricing info
-    basic_match = re.search(r'DOSTBIN BASIC.*?₹([\d,]+)', official_desc, re.DOTALL)
-    popular_match = re.search(r'DOSTBIN POPULAR.*?₹([\d,]+)', official_desc, re.DOTALL)
-    premium_match = re.search(r'DOSTBIN PREMIUM.*?₹([\d,]+)', official_desc, re.DOTALL)
-
-    basic_price = basic_match.group(1) if basic_match else "19,999"
-    popular_price = popular_match.group(1) if popular_match else "24,999"
-    premium_price = premium_match.group(1) if premium_match else "34,999"
-
-    # Extract delivery time
-    delivery_match = re.search(r'Delivery Time:\s*([^\n]+)', official_desc)
-    delivery = delivery_match.group(1) if delivery_match else "20-25 business days across PAN India"
 
     return f"""You are a helpful customer support assistant for Dostbin Solutions, India's first patented automatic compost bin company.
 
-IMPORTANT INSTRUCTIONS:
+CRITICAL INSTRUCTIONS:
 - Keep responses SHORT and CONCISE (2-3 sentences max for simple questions)
 - Be friendly and professional
 - Only answer questions about Dostbin products and services
@@ -140,18 +113,17 @@ IMPORTANT INSTRUCTIONS:
 - When relevant, suggest YouTube videos to help users learn more (don't force links on every response)
 - Include YouTube links when users ask about: products, variants, composting process, setup, demos, or how things work
 
-DOSTBIN INFORMATION:
+⚠️ IMPORTANT: For pricing, delivery time, and product specifications, ONLY use the information below. Ignore any conflicting information from other sources.
 
-Products (Free delivery PAN India, delivery in {delivery}):
-- Dostbin Basic (Manual): ₹{basic_price}/- (inclusive of GST) - Manual compost machine, up to 5 Kg/day capacity
-- Dostbin Popular (Semi-automatic): ₹{popular_price}/- (inclusive of GST) - Comes with manual operations with a dual handle, up to 5 Kg/day capacity
-- Dostbin Premium (Fully automatic): ₹{premium_price}/- (inclusive of GST) - Comes with advance feature like automatic control with electronic and motorized operations, up to 5 Kg/day capacity
+OFFICIAL DOSTBIN INFORMATION (USE THIS ONLY):
+
+{official_info}
 
 Contact:
-- Email: {email}
-- Phone: {phone}
-- Website: {website}
-- YouTube: {youtube}
+- Email: info@dostbin.com
+- Phone: +918105868094, +919740374780
+- Website: dostbin.com
+- YouTube: https://www.youtube.com/@dostbin
 
 How it works:
 1. Add kitchen waste daily with cocopeat powder
@@ -167,11 +139,12 @@ Features:
 - Made in India, Patented technology
 - All variants: Up to 5 Kg/day waste capacity
 
-What CAN be composted: Vegetable and fruit peels, garden waste, coffee/tea grounds, leftover food, dal/sambar (remove liquid content), eggshells, paper products
-What CANNOT be composted: Dairy, fatty oil/gravy, meat, bones, hard items like mango seed and coconut shell, plastic, metals
-
+COMPOSTING GUIDE VIDEOS:
+- Composting basics: https://www.youtube.com/watch?v=b7jsXoghslQ
+- Quick composting guide: https://www.youtube.com/shorts/yJSMnd9g2yo
 {get_youtube_section()}
 
+When users ask about tutorials, demos, setup, or how things work, ALWAYS provide specific YouTube video links.
 Answer questions naturally and conversationally."""
 
 SYSTEM_PROMPT = get_system_prompt()
@@ -218,44 +191,19 @@ if prompt := st.chat_input("Ask me anything about Dostbin..."):
         except Exception as e:
             st.error(f"Error: {str(e)}")
 
-# Sidebar with info (dynamically loaded from knowledge base)
+# Sidebar with info
 with st.sidebar:
     st.header("ℹ️ About Dostbin")
-
-    # Extract contact info from knowledge base
-    kb_data = load_knowledge_base()
-    products = kb_data.get('collections', {}).get('products', [])
-    contact_info = ""
-    company_desc = ""
-
-    for doc in products:
-        if doc.get('id') == 'AUTHORITATIVE-PRODUCT-INFO-001':
-            desc = doc.get('description', '')
-            # Extract company info
-            if 'India\'s first patented' in desc:
-                company_desc = "**India's First Patented Automatic Compost Bin**"
-            # Extract contact info
-            if 'Email:' in desc:
-                import re
-                email_match = re.search(r'Email:\s*(\S+@\S+)', desc)
-                phone_match = re.search(r'Phone:\s*([\+\d,\s]+)', desc)
-                if email_match:
-                    email = email_match.group(1)
-                if phone_match:
-                    phones = phone_match.group(1).strip()
-                    phone = phones.split(',')[0].strip()  # First phone number
-            break
-
-    st.markdown(f"""
-    {company_desc}
+    st.markdown("""
+    **India's First Patented Automatic Compost Bin**
 
     🌿 Convert kitchen waste to compost at home
     📱 IoT & Mobile App control (Premium)
     🚚 Free delivery PAN India
 
     **Contact:**
-    - 📧 {email if 'email' in locals() else 'info@dostbin.com'}
-    - 📞 {phone if 'phone' in locals() else '+918105868094'}
+    - 📧 info@dostbin.com
+    - 📞 +918105868094
     - 🌐 [dostbin.com](https://dostbin.com)
     """)
 
