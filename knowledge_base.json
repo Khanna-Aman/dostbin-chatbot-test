@@ -6,7 +6,6 @@
     "commit_or_build_id": "v2.0.0"
   },
   "collections": {
-    "company_socials": [],
     "products": [
       {
         "id": "AUTHORITATIVE-PRODUCT-INFO-001",
@@ -54,12 +53,6 @@
           }
         ]
       }
-    ],
-    "plans_pricing": [],
-    "support_articles": [],
-    "faqs": [],
-    "how_it_works": [],
-    "accessories": [],
-    "youtube_videos": []
+    ]
   }
 }
