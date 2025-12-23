@@ -103,7 +103,7 @@ def get_system_prompt():
             official_info = doc.get('description', '')
             break
 
-    return f"""You are a helpful customer support assistant for Dostbin Solutions, India's first patented automatic compost bin company.
+    return f"""You are a helpful customer support assistant for Dostbin Solutions.
 
 CRITICAL INSTRUCTIONS:
 - Keep responses SHORT and CONCISE (2-3 sentences max for simple questions)
@@ -113,38 +113,15 @@ CRITICAL INSTRUCTIONS:
 - When relevant, suggest YouTube videos to help users learn more (don't force links on every response)
 - Include YouTube links when users ask about: products, variants, composting process, setup, demos, or how things work
 
-⚠️ IMPORTANT: For pricing, delivery time, and product specifications, ONLY use the information below. Ignore any conflicting information from other sources.
+⚠️ IMPORTANT: For ALL information (pricing, delivery, contact, how it works, features), ONLY use the official information below. This is the single source of truth.
 
-OFFICIAL DOSTBIN INFORMATION (USE THIS ONLY):
+OFFICIAL DOSTBIN INFORMATION (COMPLETE - USE THIS ONLY):
 
 {official_info}
 
-Contact:
-- Email: info@dostbin.com
-- Phone: +918105868094, +919740374780
-- Website: dostbin.com
-- YouTube: https://www.youtube.com/@dostbin
-
-How it works:
-1. Add kitchen waste daily with cocopeat powder
-2. Bin automatically/manually mixes and aerates (depending on model)
-3. Get compost in 20-30 days (two phases of 7-10 days each)
-4. Leachate can be diluted 1:15 for liquid fertilizer
-
-Features:
-- Odor-free operation with odor absorber
-- Shred and digest buttons for easy operation (Premium model)
-- Two-phase composting system
-- Leachate collection for liquid fertilizer
-- Made in India, Patented technology
-- All variants: Up to 5 Kg/day waste capacity
-
-COMPOSTING GUIDE VIDEOS:
-- Composting basics: https://www.youtube.com/watch?v=b7jsXoghslQ
-- Quick composting guide: https://www.youtube.com/shorts/yJSMnd9g2yo
 {get_youtube_section()}
 
-When users ask about tutorials, demos, setup, or how things work, ALWAYS provide specific YouTube video links.
+When users ask about tutorials, demos, setup, or how things work, ALWAYS provide specific YouTube video links from the official information above.
 Answer questions naturally and conversationally."""
 
 SYSTEM_PROMPT = get_system_prompt()
@@ -191,19 +168,44 @@ if prompt := st.chat_input("Ask me anything about Dostbin..."):
         except Exception as e:
             st.error(f"Error: {str(e)}")
 
-# Sidebar with info
+# Sidebar with info (dynamically loaded from knowledge base)
 with st.sidebar:
     st.header("ℹ️ About Dostbin")
-    st.markdown("""
-    **India's First Patented Automatic Compost Bin**
+
+    # Extract contact info from knowledge base
+    kb_data = load_knowledge_base()
+    products = kb_data.get('collections', {}).get('products', [])
+    contact_info = ""
+    company_desc = ""
+
+    for doc in products:
+        if doc.get('id') == 'AUTHORITATIVE-PRODUCT-INFO-001':
+            desc = doc.get('description', '')
+            # Extract company info
+            if 'India\'s first patented' in desc:
+                company_desc = "**India's First Patented Automatic Compost Bin**"
+            # Extract contact info
+            if 'Email:' in desc:
+                import re
+                email_match = re.search(r'Email:\s*(\S+@\S+)', desc)
+                phone_match = re.search(r'Phone:\s*([\+\d,\s]+)', desc)
+                if email_match:
+                    email = email_match.group(1)
+                if phone_match:
+                    phones = phone_match.group(1).strip()
+                    phone = phones.split(',')[0].strip()  # First phone number
+            break
+
+    st.markdown(f"""
+    {company_desc}
 
     🌿 Convert kitchen waste to compost at home
     📱 IoT & Mobile App control (Premium)
     🚚 Free delivery PAN India
 
     **Contact:**
-    - 📧 info@dostbin.com
-    - 📞 +918105868094
+    - 📧 {email if 'email' in locals() else 'info@dostbin.com'}
+    - 📞 {phone if 'phone' in locals() else '+918105868094'}
     - 🌐 [dostbin.com](https://dostbin.com)
     """)
 
