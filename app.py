@@ -120,7 +120,7 @@ OFFICIAL DOSTBIN INFORMATION (USE THIS ONLY):
 {official_info}
 
 Contact:
-- Email: info@dostbin.com
+- Email: dev@dostbin.com
 - Phone: +918105868094, +919740374780
 - Website: dostbin.com
 - YouTube: https://www.youtube.com/@dostbin
